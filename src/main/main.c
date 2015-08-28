@@ -499,7 +499,7 @@ void init(void)
     }
 #endif
 
-#ifdef CJMCU
+#if defined(CJMCU) ||  defined(LSD)
     LED2_ON;
 #endif
 
