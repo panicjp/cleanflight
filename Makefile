@@ -38,7 +38,7 @@ FLASH_SIZE ?=
 
 FORKNAME			 = cleanflight
 
-VALID_TARGETS	 = NAZE NAZE32PRO OLIMEXINO STM32F3DISCOVERY CHEBUZZF3 CC3D CJMCU EUSTM32F103RC SPRACINGF3 PORT103R SPARKY ALIENWIIF1 ALIENWIIF3 COLIBRI_RACE
+VALID_TARGETS	 = NAZE NAZE32PRO OLIMEXINO STM32F3DISCOVERY CHEBUZZF3 CC3D CJMCU EUSTM32F103RC SPRACINGF3 PORT103R SPARKY ALIENWIIF1 ALIENWIIF3 COLIBRI_RACE LSD
 
 # Valid targets for OP BootLoader support
 OPBL_VALID_TARGETS = CC3D
@@ -47,7 +47,7 @@ OPBL_VALID_TARGETS = CC3D
 ifeq ($(FLASH_SIZE),)
 ifeq ($(TARGET),$(filter $(TARGET),CJMCU))
 FLASH_SIZE = 64
-else ifeq ($(TARGET),$(filter $(TARGET),NAZE CC3D ALIENWIIF1 OLIMEXINO))
+else ifeq ($(TARGET),$(filter $(TARGET),NAZE CC3D ALIENWIIF1 OLIMEXINO LSD))
 FLASH_SIZE = 128
 else ifeq ($(TARGET),$(filter $(TARGET),EUSTM32F103RC PORT103R STM32F3DISCOVERY CHEBUZZF3 NAZE32PRO SPRACINGF3 SPARKY ALIENWIIF3 COLIBRI_RACE))
 FLASH_SIZE = 256
@@ -186,6 +186,19 @@ DEVICE_STDPERIPH_SRC := $(DEVICE_STDPERIPH_SRC) \
 		   $(USBPERIPH_SRC) 
 
 endif
+
+ifeq ($(TARGET),LSD)
+INCLUDE_DIRS := $(INCLUDE_DIRS) \
+		   $(USBFS_DIR)/inc \
+		   $(ROOT)/src/main/vcp
+
+VPATH := $(VPATH):$(USBFS_DIR)/src
+
+DEVICE_STDPERIPH_SRC := $(DEVICE_STDPERIPH_SRC) \
+		   $(USBPERIPH_SRC) 
+
+endif
+
 
 LD_SCRIPT	 = $(LINKER_DIR)/stm32_flash_f103_$(FLASH_SIZE)k.ld
 
@@ -456,6 +469,37 @@ CC3D_SRC	 = \
 		   drivers/timer.c \
 		   drivers/timer_stm32f10x.c \
 		   io/flashfs.c \
+		   $(HIGHEND_SRC) \
+		   $(COMMON_SRC) \
+		   $(VCP_SRC)
+
+LSD_SRC	 = \
+		   startup_stm32f10x_md_gcc.S \
+		   drivers/accgyro_mpu6050.c \
+		   drivers/barometer_bmp085.c \
+		   drivers/barometer_ms5611.c \
+		   drivers/compass_hmc5883l.c \
+		   drivers/adc.c \
+		   drivers/adc_stm32f10x.c \
+		   drivers/bus_spi.c \
+		   drivers/bus_i2c_stm32f10x.c \
+		   drivers/display_ug2864hsweg01.h \
+		   drivers/gpio_stm32f10x.c \
+		   drivers/inverter.c \
+		   drivers/light_led_stm32f10x.c \
+		   drivers/light_ws2811strip.c \
+		   drivers/light_ws2811strip_stm32f10x.c \
+		   drivers/sonar_hcsr04.c \
+		   drivers/pwm_mapping.c \
+		   drivers/pwm_output.c \
+		   drivers/pwm_rx.c \
+		   drivers/serial_softserial.c \
+		   drivers/serial_uart.c \
+		   drivers/serial_uart_stm32f10x.c \
+		   drivers/sound_beeper_stm32f10x.c \
+		   drivers/system_stm32f10x.c \
+		   drivers/timer.c \
+		   drivers/timer_stm32f10x.c \
 		   $(HIGHEND_SRC) \
 		   $(COMMON_SRC) \
 		   $(VCP_SRC)
